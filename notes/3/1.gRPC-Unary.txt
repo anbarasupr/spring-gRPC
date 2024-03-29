@@ -1,0 +1,67 @@
+gRPC-Unary:
+-------------
+
+gRPC High Performance ?
+--------------------------
+	Works on protocol buffers which is faster than json
+	Uses Http 2 as underlying transport to send and receive messages
+	
+Http 1.1:
+-----------
+
+	Http 1.1 was released in1997
+	Text based protocol to send and receive messages
+	TCP Connection - 3 way handshake process
+		Significant amount of time is spent in establising a connect
+	Serves as One request per Connection model
+		For every request, it establishes new connections and the handshake happen
+		Takes time in case of large no of concurrrent connections
+		
+		
+		
+Http 2:
+----------
+	Release on 2015 based on Google's SPDY
+	Suuports Binary to send and receive messages
+	Multiplexing - Multiple request per connections
+	
+	
+Can we use Http2 for Rest:
+	Yes. Spring webflux uses Http2 with netty server in Spring Applications
+	gRPC has one advantage more than Rest, it has additional communication patterns
+	
+Webflux Rest uses Http 2 protocol as a underlying model.
+gRPC is not tied to Http protocols. Even new protocols introduced, it can uses it as underlying model in future
+
+
+
+
+gRPC: Client -> Server:
+-----------------------
+						     .proto
+		Client Channel		-------->	Server
+			 ↑							   ↓	
+			Stub						Service	
+			
+
+
+
+
+
+
+
+
+
+
+
+
+mobile version 
+2 weeks
+
+
+site type - 
+
+
+
+
+

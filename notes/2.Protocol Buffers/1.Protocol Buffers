@@ -1,0 +1,351 @@
+Protocol Buffers:
+------------------
+
+
+Rest Protocol - Http:
+------------------
+	Mostly we all use Json for inter services communication.
+	The main reason being it's text.
+	For developers like us, it's very easy to read and it's very easy to debug.
+	Now the serialization deserialization it happens for every single every single request.
+	So serialize send deserialize process again serialize return the response deserialize.
+	It's a time consuming, CPU consuming process.
+
+	If we consider the pros and cons quickly for Json, it's human friendly.
+	Browsers can support, but there is no type safety in Json, and since it's text format, that is why
+	it's human friendly.
+	But it's not machine friendly.
+	That is, it's difficult for machines to serialize and deserialize.
+	It will take more time for the systems actually.
+	So it's not optimized for inter services communication.
+	So the data size when we serialize it becomes relatively larger actually.
+	It takes more bandwidth when you send that information to another service in the network.
+	So because of the data size it also takes more time to serialize and deserialize.
+
+
+Protocol buffers:
+------------------
+	It's developed by Google and they have been using it for years
+	It's a platform language neutral mechanism for serializing deserializing structured data.
+	But it's not text format, it's binary format.
+	Because of that, it might not be human friendly, but it is machine friendly.
+	So when we serialize, the size is relatively small compared to Json.
+
+	Because of that, it will take less bandwidth when you send that information to another service via
+	network, and it will also take less time to serialize and deserialize.
+
+	So because of that, it's very fast compared to Json and it's optimized for inter services communication.
+
+	It also provides type safety.
+	
+	We Defines the message in .proto file
+	Generates Client libraries for many languages automatically
+	
+
+Default Value:
+------------------
+Proto craetes defaultInstance for every class type and it knows the default values for string, int ...
+For Enum, to define the default value, the zero th index in proto file is considered as default value
+
+
+
+OneOf:
+---------
+
+In Java, we normally use interfaces or abstract classes to achieve a polymorphic behavior, right?
+For example, in this case, let's imagine that we have a car interface which has a drive method.
+
+Now I have two different implementations.
+One is sports car implementation, other one is luxury car implementation.
+
+Now I have one method called drive.
+This is a separate class, maybe some service class.
+
+Let's imagine like that I have a method called drive which accepts the car type.
+
+Now I am saying that inside the method car dot drive.
+
+Now I can invoke this method by providing the luxury car implementation and the sports car implementation.
+
+Depending on the type I pass the implementation, I pass here the corresponding behavior we will be
+seeing right.
+
+This is very basic and we Java developers, we have done this a lot.
+It's nothing new to us.
+
+We have something similar for proto.
+But proto is not about behavior.
+Proto is about data, right?
+
+We use interfaces, abstract classes to achieve, to override the behavior or achieve the polymorphic
+behavior.
+
+But what is interface in proto?
+Okay, it's not exactly like an interface, but you can kind of visualize like that okay.
+
+In proto we have something called One.of.
+
+What it means is that you define one generic type and we can have multiple subtypes.
+
+For example, let's imagine that I am going to have a type called credentials.
+
+This credentials could be either email type credential.
+It could be email address and the and the password.
+
+Or it could be credentials like the phone number and the the one time code I had received in the phone
+number.
+
+So we could kind of define our model like this.
+
+It's about data.
+
+So either this could be this type of data or it could be this kind of data.
+
+
+For example, I am calling a remote server.
+
+I know that the remote server will give me a response you're getting right.
+
+So the response is going to be a generic type.
+
+It's a data.
+
+So the remote server will give me a response okay I know for sure, but that could be a success response.
+
+Or it could be a failed response.
+
+The success or failure.
+
+It's like two different cases, but the response is a generic type.
+
+Again, the one off doesn't have to be always either this or that.
+
+So it can also be four types or five different types.
+
+
+	Email Type		Phone Type	
+		\			/		
+		 \		   /
+		  \       /
+		   \	 /
+		  Credentials
+		  
+Note: One of can be achieved in java using Sealed Classes & Pattern Matching
+
+message Credentials{
+  oneof login_type {
+    Email email = 1;
+    Phone phone = 2;
+  }
+}
+
+It usesenum for the oneof type and also we can set the default one also by defining the 0 th index
+
+
+optional:
+--------
+
+to get the hasAge methods fpr primitive proto types, make them as optional to get the has<> methods
+
+
+Field Nos:
+-----------
+message Person {
+  string name = 1;
+  optional int32 age = 2;
+  string email = 1;
+  bool employed = 4;
+}
+
+The field numbers can be any number and need not to be in ascending or descending.
+Some numbers are reserved for proto.
+
+Json used the filed names but proto doesnot. Proto uses the field numbers to reduce the data size.
+1:sam
+2:12
+3:anbu@gmail.com
+4=false (default value is false. so it can be ignored in data)
+
+
+use the numbers 1 to 15 for frequently used fields.
+
+{
+	firstname :1 	// more frequently used
+	middlename :22 	// less frequently used
+	lastname :2		// more frequently used
+	age :3			// more frequently used
+}
+
+
+Manually generate the source code for proto files with various languages:
+--------------------------------------------------------------------------
+
+cd F:\git\spring-gRPC\grpc-java\01-grpc-playground\target\protoc-plugins
+
+./protoc-3.24.0-windows-x86_64.exe television.proto --java_out=javaOutputFolder --python_out=pythonOutputFolder 
+
+
+Proto - CI / CD:
+-----------------
+
+Maintains the proto files as aseparate git artifact and release a version whenever changes happens through separate jenkins build
+
+
+Summary:
+------------------
+
+	Developed by Google
+	Platform / language neutral mechanism for serialization/deserialization of structured data
+	It is binary format
+		Not human readable but machine friendly
+		Size is relatively small compared to Json
+		Takes less bandwidth in the network
+		Takes less to serialize and deserialize
+	Very Fast and Optimized for Inter Service Communications
+
+
+Proto Field Numbers:
+------------------
+
+	Each field is assigned with unique number
+	1-15 for frequently used fields (uses 1 byte)
+	16-2047 - uses 2 bytes
+	1 is smallest and largest is 2^29-1
+	19000-19999 are reserved
+	Do not change the field number once it is in use
+	Do not change the type once it is in use
+	Use reserved keyword if a field is removed
+	
+	
+
+In a microservices architecture, we will have a tons of network calls, particularly for an extremely
+high throughput application.
+
+We spend a huge amount of time as part of encoding, decoding and message transfer, etc. so it will
+affect the overall application, the response time.
+
+In our microservices architecture.
+
+Most of us we use Json because it's easy and simple.
+
+But the size is larger, does not provide type safety, no schema validation, etc. 
+
+The advantage is it's human friendly.
+
+Browsers can support. So for front end communication.
+
+Yeah I would love Json.
+
+But for the back end communication where we have lots and lots of network calls, should we really use
+Json?
+
+So this is where we try to see, we try to understand if we can use protobuf.
+
+And what is the advantage of what is the pros and cons of proto?
+
+
+pros:
+-----
+	Proto is from Google.
+
+	It's optimized for inter services communication.
+
+	The disadvantage of Json would be the proto advantages in a way that it provides types, uh, type safety,
+	relatively smaller size.
+
+	So it will take less time, um, to transfer the message in the network to another service.
+
+	And the encoding decoding process should be faster.
+	
+
+cons:
+----
+	The disadvantage would be it's a binary format.
+
+	So if you write in a file, we cannot read it as as you do for Json.
+
+
+	But why would you want to do that?
+
+		To debug, there is a two string method which provides a readable output which you can use.
+
+		There is also a utility.
+
+		You can google for it to convert the proto message to Json.
+
+		If you need for debugging.
+		
+		
+
+As we have the primitive types in Java, we have the scalar types, the basic building blocks into 32
+into 64, float, double, etc. these are the basic building blocks in proto using which we should be
+able to model the message.
+
+
+
+For example, if I'm interested in creating a person object with the name and age field, then I should
+be able to model that by using the message keyword person and the name age.
+
+Then I can provide the appropriate scalar type it doesn't have doesn't have to be always scalar type,
+but in this case it will be string and int 32.
+
+And I have to assign some field numbers one and two.
+And we know we know the importance of the field numbers.
+The labels is only for developers to write readable code.
+But when we send this information over the network, only the field numbers are being used.
+
+
+And we can also add comments in the code.
+This is the way in which we do in Java the multi-line command, single line command, etc. we can provide
+the package name.
+
+If you want to keep your proto files organized, we can keep it this way.
+And it also supports composition.
+So we can build complex messages by creating multiple messages.
+And we should be able to use composition.
+
+So here in this case we have a car message.
+We have a address message.
+And I create a person object with car and address.
+So we can also achieve reusability etc..
+
+To send a set of items, a collection of items we can use repeated type in proto and for map we have
+map in proto.
+
+Proto supports enum as well, but when we use enum and the tag zero, we have to provide for to use
+as default value.
+
+And as we have interface in Java two to provide a different behavior.
+We have abstract classes and interfaces, right?
+
+So this is not exactly the behavior.
+This is more of a data.
+The proto is about data.
+It's not about behavior.
+So we have something called one off to provide different sets of data.
+
+So here the in this case the credentials will act like a generic type.
+And here we have like two different data type.
+One is email and one is phone.
+
+
+And there are some best practices around the field numbers.
+
+So you each and every number is supposed to be unique.
+If we saw that and you have to use 1 to 15 for the frequently used fields because it uses only one byte,
+and 16 to 2 047 uses two bytes.
+
+Okay, so these are reserved.
+
+Just I'm saying you have to be careful and do not change the field number once it's in use.
+
+So once you release the version, right.
+So do not change the field number and do not change the type as well.
+
+And if you ever if you are planning to remove a field that's fine.
+But ensure that you use the reserved keyword if the field is removed.
+
+One is the smallest.
+The field number we can use for the message for enum, it's zero.
+
+And we can go up to this like we saw 536 million or something.

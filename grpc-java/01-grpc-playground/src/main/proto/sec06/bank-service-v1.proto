@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sec06;
+
+option java_multiple_files = true;
+option java_package = "com.vinsguru.models.sec06";
+message BalanceCheckRequestV1 {
+	int32 account_number = 1;
+}
+
+message AccountBalanceV1 {
+	int32 account_number = 1;
+	int32 balance = 2;
+}
+
+service BankServiceV1 {
+// unary
+	rpc GetAccountBalance (BalanceCheckRequestV1) returns (AccountBalanceV1);
+}

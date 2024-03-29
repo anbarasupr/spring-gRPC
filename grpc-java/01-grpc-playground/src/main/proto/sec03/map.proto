@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package sec03;
+
+option java_multiple_files = true;
+option java_package = "com.vinsguru.models.sec03";
+
+enum BodyStyle {
+  UNKNOWN = 0;
+  SEDAN = 1;
+  COUPE = 2;
+  SUV = 3;
+}
+
+message Car {
+  string make = 1;
+  string model = 2;
+  int32 year = 3;
+  BodyStyle body_style = 4;
+}
+
+message Dealer {
+  map<int32, Car> inventory = 1;
+}
+
+message DealerV {
+  // map<int32, repeated Car> inventory = 1; Map<int, List<Car>> This will not work
+     map<int32, Cars> inventory = 1; // construct in a different way like this to have a map of list
+}
+
+message Cars {
+	repeated Car carItems = 1;
+}

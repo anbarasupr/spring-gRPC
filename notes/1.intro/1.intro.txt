@@ -1,0 +1,114 @@
+
+Why gRPC:
+------------
+	single monolith application:
+		In the good old days we had a single monolith application.
+		Let's take an e-commerce application like this.
+		So this could be a product module.
+		This could be a order module.
+		This could be pricing.
+		This could be shipping.
+		So all these modules were packaged together as one file or a file.
+		Then we deployed mostly our network calls would be for database calls for better scalability, modularity
+		and maintainability.
+
+
+	microservices:
+		People moved to microservices architecture like this.
+		Even though microservices architecture provides several advantages, one major drawback is
+		increased communication overhead.
+
+		We will have a lot of network latency, serialization, deserialization, etc. so it does affect performance.
+
+		How can we make this better?
+
+		That is the problem we are trying to solve using gRPC.
+
+So what is gRPC?
+----------------
+
+	gRPC is a modern lightweight RPC framework.
+	RPC stands for Remote Procedure Call.
+	It is from Google for service to service communication.
+	It was introduced in 2016.
+	Slowly it has been gaining popularity.
+	Many people companies they started adopting it other than Google, Netflix, Microsoft, Uber, Twitter,
+	all the top tech companies, they are using gRPC now.
+
+	The gRPC is also part of Cncf. Cloud Native Computing Foundation.
+	Kubernetes is part of Cncf.
+	It's a non-profit organization to promote the development and adoption of cloud native technologies.That is what the Cncf is.
+
+	gRPC is not just for Java.
+	It supports many programming languages.
+
+
+How gRPC is better compared to traditional communication.
+----------------------------------------------------------------
+
+	unary style:
+
+		Currently, most of us have been using Rest for inter services communication.
+		This is more of a request and response model that is here.
+		I have a client and I have a server.
+		Client will send one request to the server for which the server will give me the response back.
+		This is unary style.
+		That is the typical request and response model.
+
+	 
+	But gRPC on the other hand, provides for different communication patterns other than the typical.
+	--------------------------------------------------------------------------------------------------------------------------------
+		The unary request and response model.
+
+		It is supports three additional communication patterns.
+
+		It supports real time streaming of messages between two services.
+
+		In some cases, it's no longer client and server.
+		That is, the client and the server can interact as two people interact.
+	 
+		The streaming of messages will be helpful in many cases, like sending real time notifications to mobile
+		devices, providing streaming updates, etc..
+
+		gRPC is also faster and more efficient.
+
+		It's faster is mainly because it uses the compact binary messages to reduce the message payload size
+		for communication.
+
+		So because of that, it will be using less CPU.
+
+		The serialization. Deserialization consumes a lot of CPU in a high throughput application, but gRPC will consume less
+		because of the binary messages.
+
+
+Topics:
+----------------
+	protocol buffers
+		compact binary messages
+	gRPC
+		the four different communication patterns and how the client and the server can interact
+		Flow Control/ back Pressure
+		
+	error handling
+	 
+	Channel/ Load balancing
+	 
+	interceptors
+
+	security SSL/TLS
+	
+	 
+Performance Comparision gRPC and Rest:
+---------------------------------------
+
+apache bench:
+-------------
+	do the test on warned up server
+
+	ab -n 1000 -c 100 localhost:8080/rest/unary/1000
+	
+	Requests per Second (Server thruput): 11 s using Rest, Total Time taken: 87 s, longest time taken for request when 100 users - 9 s
+	Requests per Second (Server thruput): 27 s using gRPC Unary, Total Time taken: 36 s, longest time taken for request when 100 users - 4 s
+	Requests per Second (Server thruput): 121 s using gRPC Stream, Total Time taken: 8 s, longest time taken for request when 100 users - 9 ms
+ 	
+	
