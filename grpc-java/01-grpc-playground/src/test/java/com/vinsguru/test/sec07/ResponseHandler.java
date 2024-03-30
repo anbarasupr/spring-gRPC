@@ -18,13 +18,15 @@ public class ResponseHandler implements StreamObserver<Output> {
     private StreamObserver<RequestSize> requestObserver;
     private int size;
 
+    // request 10 items whenever response received from server
     @Override
     public void onNext(Output output) {
         this.size--;
-        this.process(output);
-        if(this.size == 0){
+        this.process(output); // delay in client processing
+        if(this.size == 0){ // request next 10 items only if previous requested items are received and processed
             log.info("---------------");
-            this.request(ThreadLocalRandom.current().nextInt(1, 6));
+            // this.request(ThreadLocalRandom.current().nextInt(1, 6));
+            this.request(10);
         }
     }
 
@@ -44,6 +46,7 @@ public class ResponseHandler implements StreamObserver<Output> {
         this.requestObserver = requestObserver;
     }
 
+    // request 3 items at first time
     private void request(int size){
         log.info("requesting size {}", size);
         this.size = size;

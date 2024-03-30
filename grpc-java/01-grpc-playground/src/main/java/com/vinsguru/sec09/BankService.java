@@ -49,16 +49,23 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     }
 
     private void sendMoney(WithdrawRequest request, StreamObserver<Money> responseObserver) {
-        var accountNumber = request.getAccountNumber();
-        var requestedAmount = request.getAmount();
-        for (int i = 0; i < (requestedAmount / 10); i++) {
-            var money = Money.newBuilder().setAmount(10).build();
-            responseObserver.onNext(money);
-            log.info("money sent {}", money);
-            AccountRepository.deductAmount(accountNumber, 10);
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-        }
-        responseObserver.onCompleted();
+    	try {
+	        var accountNumber = request.getAccountNumber();
+	        var requestedAmount = request.getAmount();
+	        for (int i = 0; i < (requestedAmount / 10); i++) {
+	            var money = Money.newBuilder().setAmount(10).build();
+	            if(i==3) { // server error
+	            	throw new RuntimeException("SERVER FAILURE");
+	            }
+	            responseObserver.onNext(money);
+	            log.info("money sent {}", money);
+	            AccountRepository.deductAmount(accountNumber, 10);
+	            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+	        }
+	        responseObserver.onCompleted();
+    	} catch (Exception e) {
+    		responseObserver.onError(Status.INTERNAL.withDescription(e.getMessage()).asRuntimeException());
+		}
     }
 
 }

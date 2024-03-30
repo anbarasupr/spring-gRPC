@@ -1,17 +1,19 @@
 package com.vinsguru.test.sec12;
 
-import com.vinsguru.common.GrpcServer;
-import com.vinsguru.models.sec12.BankServiceGrpc;
-import com.vinsguru.sec12.BankService;
-import com.vinsguru.sec12.interceptors.GzipResponseInterceptor;
-import io.grpc.ClientInterceptor;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
-import java.util.List;
+import com.vinsguru.common.GrpcServer;
+import com.vinsguru.models.sec12.BankServiceGrpc;
+import com.vinsguru.sec12.BankService;
+import com.vinsguru.sec12.interceptors.GzipResponseInterceptor;
+
+import io.grpc.ClientInterceptor;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractInterceptorTest {
@@ -22,11 +24,12 @@ public abstract class AbstractInterceptorTest {
     protected BankServiceGrpc.BankServiceBlockingStub bankBlockingStub;
 
     protected abstract List<ClientInterceptor> getClientInterceptors();
-
+    
+    //private final GrpcServer grpcServer = GrpcServer.create(new BankService());
     protected GrpcServer createServer() {
         return GrpcServer.create(6565, builder -> {
             builder.addService(new BankService())
-                   .intercept(new GzipResponseInterceptor());
+                   .intercept(new GzipResponseInterceptor()); // set GZip header at server level
         });
     }
 

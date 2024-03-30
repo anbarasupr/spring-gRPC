@@ -40,6 +40,8 @@ public class DeadlineBankService extends BankServiceGrpc.BankServiceImplBase {
             return;
         }
 
+        // if client cancelled due to deadline or any, this will used to identify Context.current().isCancelled() 
+        // or else the server will stream event though the client is not ready to accept
         for (int i = 0; i < (requestedAmount / 10) && !Context.current().isCancelled(); i++) {
             var money = Money.newBuilder().setAmount(10).build();
             responseObserver.onNext(money);

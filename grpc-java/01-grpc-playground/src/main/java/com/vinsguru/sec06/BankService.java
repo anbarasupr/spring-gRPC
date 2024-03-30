@@ -15,6 +15,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
 
     private static final Logger log = LoggerFactory.getLogger(BankService.class);
 
+    // Unary model - typical client server interaction as one time
     @Override
     public void getAccountBalance(BalanceCheckRequest request, StreamObserver<AccountBalance> responseObserver) {
         log.info("request received {}", request.getAccountNumber());
@@ -28,6 +29,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    // Unary model - typical client server interaction as one time
     @Override
     public void getAllAccounts(Empty request, StreamObserver<AllAccountsResponse> responseObserver) {
         var accounts = AccountRepository.getAllAccounts()
@@ -40,6 +42,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         responseObserver.onCompleted();
     }
 
+    // SSE: Server Streaming - Deducts 10 denominations for the Withdrawal request and emits each items to client
     @Override
     public void withdraw(WithdrawRequest request, StreamObserver<Money> responseObserver) {
         /*
@@ -50,7 +53,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         var accountNumber = request.getAccountNumber();
         var requestedAmount = request.getAmount();
         var accountBalance = AccountRepository.getBalance(accountNumber);
-
+        log.info("Total balance available {}", accountBalance);
         if(requestedAmount > accountBalance){
             responseObserver.onCompleted(); // we will change it to proper error later
             return;
@@ -59,13 +62,16 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
         for (int i = 0; i < (requestedAmount / 10); i++) {
             var money = Money.newBuilder().setAmount(10).build();
             responseObserver.onNext(money);
-            log.info("money sent {}", money);
+            log.info("money withdrawn {}", money);
             AccountRepository.deductAmount(accountNumber, 10);
             Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
+        accountBalance = AccountRepository.getBalance(accountNumber);
+        log.info("Final balance available {}", accountBalance);
         responseObserver.onCompleted();
     }
 
+    // Both Client and Server Streaming in Bi-directional like Websocket
     @Override
     public StreamObserver<DepositRequest> deposit(StreamObserver<AccountBalance> responseObserver) {
         return new DepositRequestHandler(responseObserver);

@@ -34,6 +34,7 @@ public class Lec06KeepAliveDemoTest extends AbstractChannelTest {
 
     /*
         Configure the server with keep alive
+        Change the log level to DEBUG in log xml file under resources
      */
     // @Test
     public void keepAliveDemo() {

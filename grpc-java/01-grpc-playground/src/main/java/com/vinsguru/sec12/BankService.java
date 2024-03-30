@@ -20,11 +20,12 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     public void getAccountBalance(BalanceCheckRequest request, StreamObserver<AccountBalance> responseObserver) {
         var accountNumber = request.getAccountNumber();
         var balance = AccountRepository.getBalance(accountNumber);
+        log.info("request accountNumber {} balance {}",accountNumber, balance);
         var accountBalance = AccountBalance.newBuilder()
                                            .setAccountNumber(accountNumber)
                                            .setBalance(balance)
                                            .build();
-     //   Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+//        Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
        // ((ServerCallStreamObserver<AccountBalance>) responseObserver).setCompression("gzip");
         responseObserver.onNext(accountBalance);
         responseObserver.onCompleted();

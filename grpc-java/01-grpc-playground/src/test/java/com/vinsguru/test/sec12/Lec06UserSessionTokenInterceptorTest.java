@@ -91,6 +91,7 @@ public class Lec06UserSessionTokenInterceptorTest extends AbstractInterceptorTes
         public void applyRequestMetadata(RequestInfo requestInfo, Executor executor, MetadataApplier metadataApplier) {
             executor.execute(() -> {
                 var metadata = new Metadata();
+                log.info("UserSessionToken Client applyRequestMetadata {}",jwt);
                 metadata.put(Constants.USER_TOKEN_KEY, TOKEN_FORMAT.formatted(Constants.BEARER, jwt));
                 metadataApplier.apply(metadata);
             });

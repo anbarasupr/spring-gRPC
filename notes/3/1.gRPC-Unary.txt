@@ -46,6 +46,85 @@ gRPC: Client -> Server:
 
 
 
+Stub - Synchronous and Asynchronous:
+------------------------------------
+	Client calls to the server can be Sync/Asynchronous
+		Sync -> blocking/waiting for the response
+		Async	->	Register a listener for callback
+		
+	It is completely upto the client to choose above and also depends ont he RPC model
+	
+	Java 21 - Virtual Thread
+		We can write sync / blocking style code but the Networks calls are non-blocking behind the scenes
+		
+	Use Virtual thread which is light weight instead of OS thread which is expensive
+	
+
+
+Streaming VS Unary:
+------------------------------------
+
+Streaming:
+	Size - potentially large / unknown
+		Huge file
+		Send info in chunks
+	Time Consuming - Periodic Updates
+		Uber
+		
+	More efficient than multiple RPC calls - avaoid polling
+	
+Unary:
+	More efficient than streaming RPC
+	Size is not too big and not very time consuming
+
+
+
+Trailer Metadata:
+-----------------
+
+Metadata = Headers
+	Ex:	Content-Type: application/json (for grpc, it is application/grpc)
+		Transfer-Encoding: Chunked
+		
+Metadata is sent in the initial response
+
+Trailer
+	Trailers are metadata sent by the server to the client at the end of RPC call
+	They provide information about the status of RPC
+	It can include additional details such as custom metadata or error information
+	
+	
+Status:
+		INVALID ARGUMENT
+		FAILED PRECONDITION
+		
+Trailer:
+		Custom Application Specific Status Code
+	
+	
+	
+Input validation / Error handling:
+-----------------------------------	
+Error Response:
+		Status	with Description
+		Status with Trailer
+
+	
+	Status:
+		Success
+			OK
+		Failure	
+			INVALID ARGUMENT
+			FAILED PRECONDITION
+			UNKNOWN
+			INTERNAL
+			
+		We pass the Status as exception via onError
+			We can add meaningfull description
+			We can also attach custom message via trailers
+				Client should also know how to access trailers from metadata
+		After onError, we cannot expect any more response from the server for the request
+		OneOf could be a better choice if we do not want to stop the streaming
 
 
 
@@ -54,6 +133,18 @@ gRPC: Client -> Server:
 
 
 
+gRPC- Deadline: Resilient Pattern:
+----------------------------------------
+	Client side timeout configuration for an RPC to complete
+	Failfast
+
+
+Wait for Ready:
+---------------
+	Client is willing to wait for server to be available
+	This will not fail fast immediately and it will wait for server to be available
+	
+	
 
 mobile version 
 2 weeks

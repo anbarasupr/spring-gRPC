@@ -1,10 +1,12 @@
 package com.vinsguru.test.sec12;
 
 import com.vinsguru.models.sec12.BalanceCheckRequest;
+import com.vinsguru.test.sec12.interceptors.DeadlineInterceptor;
 import com.vinsguru.test.sec12.interceptors.GzipRequestInterceptor;
 import io.grpc.ClientInterceptor;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 /*
@@ -15,7 +17,8 @@ public class Lec04GzipInterceptorTest extends AbstractInterceptorTest {
 
     @Override
     protected List<ClientInterceptor> getClientInterceptors() {
-        return List.of(new GzipRequestInterceptor());
+        return List.of(new GzipRequestInterceptor()); // grpc-encoding: gzip header will set
+        // return List.of(new GzipRequestInterceptor(), new DeadlineInterceptor(Duration.ofSeconds(2)));
     }
 
     @Test

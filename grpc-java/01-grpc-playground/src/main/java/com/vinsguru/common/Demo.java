@@ -1,7 +1,9 @@
 package com.vinsguru.common;
 
+import com.vinsguru.sec06.BankService;
 import com.vinsguru.sec06.BankServiceV1;
-import com.vinsguru.sec12.BankService;
+import com.vinsguru.sec06.TransferService;
+import com.vinsguru.sec07.FlowControlService;
 import com.vinsguru.sec12.interceptors.ApiKeyValidationInterceptor;
 
 /*
@@ -12,8 +14,17 @@ public class Demo {
     public static void main(String[] args) {
 
         GrpcServer.create(6565, builder -> {
-                      builder.addService(new BankServiceV1());
+//                      builder.addService(new BankServiceV1());
+//                      builder.addService(new BankService());
+//                      builder.addService(new TransferService());
+//                      builder.addService(new FlowControlService());
+//        				builder.addService(new com.vinsguru.sec09.BankService());
+            
+                      // builder.addService(new com.vinsguru.sec10.BankService());
+                      builder.addService(new com.vinsguru.sec12.BankService())
+                      .intercept(new ApiKeyValidationInterceptor());
                    })
+        
                   .start()
                   .await();
 

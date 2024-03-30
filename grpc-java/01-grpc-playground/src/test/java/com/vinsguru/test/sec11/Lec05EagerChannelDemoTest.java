@@ -15,7 +15,7 @@ public class Lec05EagerChannelDemoTest extends AbstractChannelTest {
 
     @Test
     public void eagerChannelDemo() {
-        log.info("{}", channel.getState(true));
+        log.info("{}", channel.getState(true)); // requestConnection if true, the channel will try to make a connection if it iscurrently IDLE
     }
 
 }

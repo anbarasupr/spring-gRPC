@@ -2,9 +2,12 @@ package com.vinsguru.test.sec10;
 
 import com.vinsguru.models.sec10.AccountBalance;
 import com.vinsguru.models.sec10.BalanceCheckRequest;
+import com.vinsguru.models.sec10.ErrorMessage;
 import com.vinsguru.models.sec10.ValidationCode;
 import com.vinsguru.test.common.ResponseObserver;
 import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.ProtoUtils;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +22,9 @@ public class Lec01UnaryInputValidationTest extends AbstractTest {
             var response = this.bankBlockingStub.getAccountBalance(request);
         });
         Assertions.assertEquals(ValidationCode.INVALID_ACCOUNT, getValidationCode(ex));
+        
+        var key = ProtoUtils.keyForProto(ErrorMessage.getDefaultInstance());
+        System.out.println(ex.getTrailers().get(key).getValidationCode());
     }
 
     @Test

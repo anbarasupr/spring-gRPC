@@ -8,6 +8,7 @@ import com.vinsguru.test.common.ResponseObserver;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,15 +17,24 @@ import java.util.stream.Stream;
 
 public class Lec02ServerStreamingInputValidationTest extends AbstractTest {
 
+    @Test
+    public void blockingInputValidationTestSingle(){
+        var ex = Assertions.assertThrows(StatusRuntimeException.class, () -> {
+        	var request = WithdrawRequest.newBuilder().setAccountNumber(11).setAmount(10).build();        	
+            var response = this.bankBlockingStub.withdraw(request).next();
+        });
+        Assertions.assertEquals(Status.Code.INVALID_ARGUMENT, ex.getStatus().getCode());
+    }
+    
     @ParameterizedTest
     @MethodSource("testdata")
     public void blockingInputValidationTest(WithdrawRequest request, Status.Code code){
         var ex = Assertions.assertThrows(StatusRuntimeException.class, () -> {
-            var response = this.bankBlockingStub.withdraw(request).hasNext();
+            var response = this.bankBlockingStub.withdraw(request).next();
         });
         Assertions.assertEquals(code, ex.getStatus().getCode());
     }
-
+    
     @ParameterizedTest
     @MethodSource("testdata")
     public void asyncInputValidationTest(WithdrawRequest request, Status.Code code){

@@ -9,6 +9,7 @@ import io.grpc.protobuf.ProtoUtils;
 
 import java.util.Optional;
 
+// Status With Trailers
 public class RequestValidator {
 
     private static final Metadata.Key<ErrorMessage> ERROR_MESSAGE_KEY = ProtoUtils.keyForProto(ErrorMessage.getDefaultInstance());
@@ -43,6 +44,8 @@ public class RequestValidator {
                                        .setValidationCode(code)
                                        .build();
         metadata.put(ERROR_MESSAGE_KEY, errorMessage);
+        var key = Metadata.Key.of("desc", Metadata.ASCII_STRING_MARSHALLER);
+        metadata.put(key, code.toString());
         return metadata;
     }
 

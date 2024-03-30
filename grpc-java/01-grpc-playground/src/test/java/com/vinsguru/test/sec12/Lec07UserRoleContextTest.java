@@ -41,7 +41,7 @@ public class Lec07UserRoleContextTest extends AbstractInterceptorTest {
 
     @Test
     public void unaryUserCredentialsDemo(){
-        for (int i = 1; i <= 4 ; i++) {
+        for (int i = 1; i <= 5 ; i++) {
             var request = BalanceCheckRequest.newBuilder()
                                              .setAccountNumber(i)
                                              .build();
@@ -73,3 +73,20 @@ public class Lec07UserRoleContextTest extends AbstractInterceptorTest {
     }
 
 }
+
+
+/*
+ * Context:
+---------------------
+
+Requirement:
+	Get Account Balance
+	Prime Users
+		return the balance as it is
+		
+	Standard Users
+		$1 service charge
+		deduct $1 and return the balance
+ * 
+ * 
+ */

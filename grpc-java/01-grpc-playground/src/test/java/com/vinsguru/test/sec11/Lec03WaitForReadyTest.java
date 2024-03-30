@@ -43,7 +43,8 @@ public class Lec03WaitForReadyTest extends AbstractChannelTest {
                                      .build();
         var ex = Assertions.assertThrows(StatusRuntimeException.class, () -> {
             var iterator = this.bankBlockingStub.withWaitForReady()
-                                                .withDeadline(Deadline.after(8, TimeUnit.SECONDS))
+                                                .withDeadline(Deadline.after(15, TimeUnit.SECONDS))
+                                                // .withDeadline(Deadline.after(8, TimeUnit.SECONDS))
                                                 .withdraw(request);
             while (iterator.hasNext()) {
                 log.info("{}", iterator.next());

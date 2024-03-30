@@ -1,0 +1,172 @@
+Channel
+ 
+Http 1.1
+---------
+	1 request per connection
+	Required hundreds of connections to handle multiple concurret requests
+	Not persistent by default
+	App frameworks maintain a connectionpool with "keep alive"
+	
+										
+------------						------------
+|		   |	<---------->        |		   |
+|  Client  |	<---------->        |  Server  |
+|          |	<---------->        |          |
+------------                        ------------
+
+
+ 
+Http 2
+---------
+	1 persistent connection between client and server
+	Can send hundreds of concurret connections
+	
+										
+------------						------------
+|		   |	   			        |		   |
+|  Client  |	<---------->        |  Server  |
+|          |	 			        |          |
+------------                        ------------
+
+
+
+
+
+Channel:
+----------
+
+	Channel is abstract over a connection and represents the connection
+	ManagedChanne; - gRPC takes care of it
+	Connection creation is lazy and established during the first RPC
+	one channel	 per connection is enough for client / server communication even for multiple requests
+		Also We can create more channels - but not really required
+		Channel creation is an expensive process
+			We create channel when the app starts
+			We shutdown when the app terminates
+	Thread safe
+	Can be shared with the multiple stubs for the server
+		Banking Service
+		Transfer Service
+		
+		
+Multiple Channels:
+-----------------
+Order service can use two different channels one for product service and other for payment service to communicate
+	
+								------------					
+	                            |		   |                    
+	                            |  Product |                    
+						        |  Service |                    
+								------------					
+							   /
+			 ------------  	  /		
+			 |		    |	 / 		
+			 |  Order   |	/		
+			 |  Service |	\			
+			 ------------	 \
+							  \						
+                               \
+        						  ------------		
+                                  |		     |                  
+                                  |  Payment |                  
+                                  |  Service |                  
+                                  ------------
+								  
+								  
+Server Side Loadbalancing :
+--------------------------
+	Order Service communicates to Proxy Server not the private Services which are behing the proxy which is payment service here.
+
+	Proxy Server should support Http 2 which is a infra support required
+
+																							
+                                                    						------------	
+                                                                            |		   |  
+                                                                            |  Payment |  
+                                                    				        |  Service |  
+                                                    						------------	
+                                                    					   /				
+  ------------                                       	 ------------  	  /					------------
+  |		     |                                       	 |		    |	 / 					|		   |
+  |  Order   |    -------------------------->  			 |  Proxy   |	/--------------->  	|  Payment |
+  |  Service |                                       	 |  Service |	\			   		|  Service |
+  ------------                                       	 ------------	 \               	------------
+                                                    					  \					
+                                                                           \
+																			------------
+																			|		   |
+																			|  Payment |
+																			|  Service |
+																			------------
+																			
+																			
+
+
+NGINX load balancing:
+--------------------------
+
+	It is not really a gRPC feature. It is an infrastructure feature
+	Docker knowledge is required
+	Steps:
+		Use sec06 bank service
+		Run 2 instances as shown below
+		Use nginx confog to route
+		Use test class. Create managed channel to connect to 8585 proxy server
+		
+		
+		
+		
+			
+		                                                    						------------	
+                                                                                    |		   |  
+                                                                                    |  Bank    |  bank service 6565
+                                                            				        |  Service |  
+                                                            						------------	
+         Demo Test Class                                      		8585		   /				
+          ------------                                       	 ------------  	  /					 
+          |		     |                                       	 |		    |	 / 					 
+          |  Demo    |    -------------------------->  			 |  Proxy   |	/                    
+          |          |                                       	 |  Service |	\			   		 
+          ------------                                       	 ------------	 \               	 
+                                                            					  \					
+                                                                                   \
+        																			------------
+        																			|		   |
+        																			|  Bank    |	bank service 7575
+        																			|  Service |
+        																			------------
+																					
+																					
+Context:
+---------------------
+
+Requirement:
+	Get Account Balance
+	Prime Users
+		return the balance as it is
+		
+	Standard Users
+		$1 service charge
+		deduct $1 and return the balance
+		
+		
+Interceptor:
+------------
+
+	It is a mechanism to manipulate RPC
+	We can intercept RPCs both at client and server side to handle cross cutting concerns
+	
+	CallOptions:
+		Helpfull to pass some information from service class to interceptor
+		Via calloptions, we can set Global Deadlines, Compression headers, Executors
+		
+	Metadata:
+		Key value Pair like header
+		Attach api key in metadata
+		
+	Context:
+		Key value Pair in server side
+		Immutuable
+		Pass additional information to the context to pass it to service layer
+		Use context to run the server call
+		
